@@ -42,7 +42,7 @@ encabezado.place(x=20,y=75)
 encabezado.config(fg="black",bg="white",font=("Verdana",11))
 
 cr=open("eventos.json",'w')
-cr.write("{}")
+cr.write("")
 cr.close
 
 #clase evento 
@@ -500,206 +500,217 @@ def abrir_ventana():
         Eventos.listaeventos.append(entry)
         Eventos.agregar_evento()
         Eventos.listadias.append(dia_actual)
-
-
-        def eliminar_evento():
-            from centralizacion import centrar
-            import tkinter as tk
-            from tkinter import messagebox,ttk
-
-            ventanam = Toplevel(raiz)
-            ventanam.focus_set()
-            ventanam.title("Eliminar evento")
-            ventanam.geometry("200x200")
-            centrar(ventanam,200,200)
-                
-            import json
-            with open("eventos.json",'r') as archivo:
-                datos=json.load(archivo)
-                datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
-                datas = json.loads(datajs)#objeto python
-            
-                listats=[]
-            
-            for a in range(len(datas)):
-                aa=(datas[a])
-                for b in aa:
-                    c=aa[b]
-                    if b == "Titulo":
-                        listats.append(c) 
-
-            combotitulo=ttk.Combobox(ventanam,values=listats)
-            combotitulo.place(x=50,y=80)
-            combotitulo.config(width="12")
-
-            def salirr():
-                ventanam.quit()
-
-            def eliminar():
-                #eliminar un evento
-                from tkinter import messagebox
-                messagebox.showinfo(message="Se ha eliminado un evento", title="Eliminar Evento")
-                with open("eventos.json",'r') as archivo:
-                    datos=json.load(archivo)
-                datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
-                datas = json.loads(datajs)#objeto python
-                
-                for i in range(len(listats)):
-                    if listats[i] == combotitulo.get():
-                            numero=i
-                datas.pop(numero)
-                with open("eventos.json",'w') as archivo:
-                    json.dump(datas,archivo)
-
-            #boton salir
-            bs=ttk.Button(ventanam,text="Salir",command=salirr)
-            bs.pack()
-            bs.place(x=10,y=140)
-
-             #boton guardar
-            bg=ttk.Button(ventanam,text="Elimnar",command=eliminar)
-            bg.pack()
-            bg.place(x=100,y=140)
-
-            #Label 
-            Label(ventanam,text="Seleccione el Evento \n a eliminar:").place(x=10,y=25)   
-            
-            
-
-        def modificar_evento():
-            from centralizacion import centrar
-            import tkinter as tk
-            from tkinter import messagebox,ttk
-
-            ventanamod = Toplevel(raiz)
-            ventanamod.focus_set()
-            ventanamod.title("Modificar evento")
-            ventanamod.geometry("200x200")
-            centrar(ventanamod,200,200)
-            #listas para combox de titulos y items para modificar
-            import json
-            with open("eventos.json",'r') as archivo:
-                datos=json.load(archivo)
-            datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
-            datas = json.loads(datajs)#objeto python
-            #mostrar y añadir a lista Titulos
-            listatitulos=[]
-            listaitems=[]
-            for a in range(len(datas)):
-                aa=(datas[a])
-                for b in aa:
-                    listaitems.append(b)
-                    c=aa[b]
-                    if b == "Titulo":
-                        listatitulos.append(c)
-               
-
-            def selecciontitulo():
-                f=Frame(ventanamod)
-                f.pack()
-                f.config(width="270",height="450")
-
-                Label(f,text="Seleccione item a modificar").place(x=15,y=40)
-
-                #combox modificar
-                comboitem=ttk.Combobox(ventanamod,values=listaitems)
-                comboitem.place(x=40,y=80)
-                comboitem.config(width="14")
-
-                #boton seleccionar item a modifica
-                def mostrar_casillero():
-                    fe = Toplevel(raiz)
-                    fe.focus_set()
-                    fe.title("Modificar evento")
-                    fe.geometry("200x200")
-                    centrar(fe,200,200)
-                    a=comboitem.get()
-                    Label(fe,text="Ingrese el nuevo valor de \n"+a).place(x=20,y=40)
-                    nuevo=Entry(fe,width="25")
-                    nuevo.pack()
-                    nuevo.place(x=22,y=100)
-                    nuevo.insert(0, "Nueva@ "+a)
-                    nuevo.focus_set()
-
-                    def salirc():
-                        fe.quit()
-                    
-                    def guardarcambios():
-                        from tkinter import messagebox
-                        messagebox.showinfo(message="Cambios Guardados", title="Modificar Calendario")
-                        import json
-                        with open("eventos.json",'r') as archivo:
-                            datos=json.load(archivo)
-                            datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
-                            datas = json.loads(datajs)#objeto python
-                        
-                        with open("eventos.json",'w') as archivo:
-                            #elegir titulo a modificar
-                            for i in range(len(listatitulos)):
-                                if listatitulos[i] == combotitulo.get():
-                                    tituloelegido=i
-
-                            #modifica el titulo
-                            aa=(datas[tituloelegido])
-                            for b in aa:
-                                if b == comboitem.get():
-                                    #Aqui se pone en a el nuevo titulo a cambiar ejemplo puse un input
-                                    aa[b]=nuevo.get()
-
-                            #guardar la modificacion
-                            json.dump(datas,archivo, indent=4)
-
-                    #boton salir
-                    bs=ttk.Button(fe,text="Salir",command=salirc)
-                    bs.pack()
-                    bs.place(x=10,y=140)
-
-                    #boton guardar
-                    bg=ttk.Button(fe,text="Guardar",command=guardarcambios)
-                    bg.pack()
-                    bg.place(x=100,y=140)
-
-                ci=ttk.Button(ventanamod,text="Aceptar",command=mostrar_casillero)
-                ci.place(x=50,y=140)
-
-                
-                
-            #Label modifcar evento
-            Label(ventanamod,text="Seleccione el Evento \n a modificar:").place(x=10,y=25)   
-            combotitulo=ttk.Combobox(ventanamod,values=listatitulos)
-            combotitulo.place(x=50,y=80)
-            combotitulo.config(width="12")
-            #boton seleccionar
-            bc=ttk.Button(ventanamod,text="Seleccionar",command=selecciontitulo)
-            bc.place(x=50,y=140)
-
-        #boton modificar evento
-        boton2=Button(raiz,text="Modificar\n Evento",command=modificar_evento)
-        boton2.config(width=9,height=3)
-        boton2.place(x=15,y=325)
-
-        #boton eliminar evento
-        boton3=Button(raiz,text="Eliminar\n Evento",command=eliminar_evento)
-        boton3.config(width=9,height=3)
-        boton3.place(x=455,y=325)
-
-        #cierra la ventana de agregar
-        ventananueva.destroy()
-        
-    def salir():
-        ventananueva.quit()
-
-    
-
     #BOTON AGREGAR LISTO
     boton_listo=ttk.Button(ventananueva,text="Agregar",command=agregado)
     boton_listo.pack()
     boton_listo.place(x=160,y=415)
 
     #BOTON SALIR
-    boto_salir=ttk.Button(ventananueva,text="Salir",command=salir)
+    boto_salir=ttk.Button(ventananueva,text="Salir")
     boto_salir.pack()
-    boto_salir.place(x=20,y=415)
+    boto_salir.place(x=20,y=415)   
+        
+from tkinter import messagebox
+def error_archivo():
+    messagebox.showwarning("Error", "No existen eventos")
+
+def eliminar_evento():
+    ar=open("eventos.json",'r')
+    l=ar.readline()
+    ar.close
+    if l=="{}" or l=="" or l=="[]":
+        error_archivo()
+    else:
+        from centralizacion import centrar
+        import tkinter as tk
+        from tkinter import messagebox,ttk
+
+        ventanam = Toplevel(raiz)
+        ventanam.focus_set()
+        ventanam.title("Eliminar evento")
+        ventanam.geometry("200x200")
+        centrar(ventanam,200,200)
+            
+        import json
+        with open("eventos.json",'r') as archivo:
+            datos=json.load(archivo)
+        datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
+        datas = json.loads(datajs)#objeto python
+        
+        listats=[]
+        
+        for a in range(len(datas)):
+            aa=(datas[a])
+            for b in aa:
+                c=aa[b]
+                if b == "Titulo":
+                    listats.append(c) 
+
+        combotitulo=ttk.Combobox(ventanam,values=listats)
+        combotitulo.place(x=50,y=80)
+        combotitulo.config(width="12")
+
+        
+
+        def eliminar():
+            #eliminar un evento
+            from tkinter import messagebox
+            messagebox.showinfo(message="Se ha eliminado un evento", title="Eliminar Evento")
+            with open("eventos.json",'r') as archivo:
+                datos=json.load(archivo)
+            datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
+            datas = json.loads(datajs)#objeto python
+            
+            for i in range(len(listats)):
+                if listats[i] == combotitulo.get():
+                        numero=i
+            datas.pop(numero)
+            Eventos.listaeventos.pop(numero)
+            with open("eventos.json",'w') as archivo:
+                json.dump(datas,archivo)
+
+        #boton salir
+        bs=ttk.Button(ventanam,text="Salir")
+        bs.pack()
+        bs.place(x=10,y=140)
+
+            #boton guardar
+        bg=ttk.Button(ventanam,text="Elimnar",command=eliminar)
+        bg.pack()
+        bg.place(x=100,y=140)
+
+        #Label 
+        Label(ventanam,text="Seleccione el Evento \n a eliminar:").place(x=10,y=25)   
+            
+            
+
+def modificar_evento():
+    ar=open("eventos.json",'r')
+    l=ar.readline()
+    ar.close
+    if l=="{}" or l=="" or l=="[]":
+        error_archivo()
+    else:
+        from centralizacion import centrar
+        import tkinter as tk
+        from tkinter import messagebox,ttk
+
+        ventanamod = Toplevel(raiz)
+        ventanamod.focus_set()
+        ventanamod.title("Modificar evento")
+        ventanamod.geometry("200x200")
+        centrar(ventanamod,200,200)
+        #listas para combox de titulos y items para modificar
+        import json
+        with open("eventos.json",'r') as archivo:
+            datos=json.load(archivo)
+        datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
+        datas = json.loads(datajs)#objeto python
+        #mostrar y añadir a lista Titulos
+        listatitulos=[]
+        listaitems=[]
+        for a in range(len(datas)):
+            aa=(datas[a])
+            for b in aa:
+                listaitems.append(b)
+                c=aa[b]
+                if b == "Titulo":
+                    listatitulos.append(c)
+            
+
+        def selecciontitulo():
+            f=Frame(ventanamod)
+            f.pack()
+            f.config(width="270",height="450")
+
+            Label(f,text="Seleccione item a modificar").place(x=15,y=40)
+
+            #combox modificar
+            comboitem=ttk.Combobox(ventanamod,values=listaitems)
+            comboitem.place(x=40,y=80)
+            comboitem.config(width="14")
+
+            #boton seleccionar item a modifica
+            def mostrar_casillero():
+                fe = Toplevel(raiz)
+                fe.focus_set()
+                fe.title("Modificar evento")
+                fe.geometry("200x200")
+                centrar(fe,200,200)
+                a=comboitem.get()
+                Label(fe,text="Ingrese el nuevo valor de \n"+a).place(x=20,y=40)
+                nuevo=Entry(fe,width="25")
+                nuevo.pack()
+                nuevo.place(x=22,y=100)
+                nuevo.insert(0, "Nueva@ "+a)
+                nuevo.focus_set()
+
+                def salirc():
+                    fe.quit()
+                
+                def guardarcambios():
+                    from tkinter import messagebox
+                    messagebox.showinfo(message="Cambios Guardados", title="Modificar Calendario")
+                    import json
+                    with open("eventos.json",'r') as archivo:
+                        datos=json.load(archivo)
+                        datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
+                        datas = json.loads(datajs)#objeto python
+                    
+                    with open("eventos.json",'w') as archivo:
+                        #elegir titulo a modificar
+                        for i in range(len(listatitulos)):
+                            if listatitulos[i] == combotitulo.get():
+                                tituloelegido=i
+
+                        #modifica el titulo
+                        aa=(datas[tituloelegido])
+                        for b in aa:
+                            if b == comboitem.get():
+                                #Aqui se pone en a el nuevo titulo a cambiar ejemplo puse un input
+                                aa[b]=nuevo.get()
+
+                        #guardar la modificacion
+                        json.dump(datas,archivo, indent=4)
+                        Eventos.listaeventos=[]
+                        Eventos.listaeventos=[datas]
+                #boton salir
+                bs=ttk.Button(fe,text="Salir",command=salirc)
+                bs.pack()
+                bs.place(x=10,y=140)
+
+                #boton guardar
+                bg=ttk.Button(fe,text="Guardar",command=guardarcambios)
+                bg.pack()
+                bg.place(x=100,y=140)
+
+            ci=ttk.Button(ventanamod,text="Aceptar",command=mostrar_casillero)
+            ci.place(x=50,y=140)
+
+        
+        #Label modifcar evento
+        Label(ventanamod,text="Seleccione el Evento \n a modificar:").place(x=10,y=25)   
+        combotitulo=ttk.Combobox(ventanamod,values=listatitulos)
+        combotitulo.place(x=50,y=80)
+        combotitulo.config(width="12")
+        #boton seleccionar
+        bc=ttk.Button(ventanamod,text="Seleccionar",command=selecciontitulo)
+        bc.place(x=50,y=140)
+
+#boton modificar evento
+boton2=Button(raiz,text="Modificar\n Evento",command=modificar_evento)
+boton2.config(width=9,height=3)
+boton2.place(x=15,y=325)
+
+#boton eliminar evento
+boton3=Button(raiz,text="Eliminar\n Evento",command=eliminar_evento)
+boton3.config(width=9,height=3)
+boton3.place(x=455,y=325)
+
+
+    
+
+    
 
 #boton agregar evento
 from tkinter import ttk

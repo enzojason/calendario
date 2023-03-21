@@ -1,1 +1,10 @@
-{}
+[
+    {
+        "Descripcion": "aaa",
+        "Duracion": "1:00",
+        "Fecha Recordatorio": "/3/2023,:",
+        "Fecha y hora": "21/3/2023,19:00:29",
+        "Importancia": "Normal",
+        "Titulo": "titulo"
+    }
+]
