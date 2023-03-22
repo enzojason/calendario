@@ -41,9 +41,6 @@ encabezado=Label(raiz,text="Lunes     Martes     Miercoles  Jueves   Viernes    
 encabezado.place(x=20,y=75)
 encabezado.config(fg="black",bg="white",font=("Verdana",11))
 
-cr=open("eventos.json",'w')
-cr.write("")
-cr.close
 
 #clase evento 
 class Eventos():
@@ -56,10 +53,34 @@ class Eventos():
         self.duracion=duracion
         self.fecha_recordatorio=fecha_recordatorio
         self.etiquetas=etiquetas
+    try:
+        import json
+        f = open("eventos.json")
+        f.close()
+        ar=open("eventos.json",'r')
+        l=ar.readline()
+        ar.close
+        if l=="{}" or l=="" or l=="[]" or l==" ":
+            a=open("eventos.json",'w')
+            a.write("")
+            listaeventos=[]
+        else:
+            with open("eventos.json",'r') as archivo:
+                datos=json.load(archivo)
+            datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
+            datas = json.loads(datajs)#objeto python
+            with open("eventos.json",'w') as archivo:
+                json.dump(datas,archivo)
+                listaeventos=datas
 
-    listaeventos=[]
+    except IOError:
+        print('File does not exist')
+        a=open("eventos.json",'w')
+        a.write("")
+        listaeventos=[]
+    
     listadias=[]
-    repeticiones=0
+    repeticiones=1
     colores=["grey","green","blue","yellow","red","skyblue","springgreen","pink"]
     def agregar_evento():
         import json
@@ -67,16 +88,22 @@ class Eventos():
         with open ("eventos.json",'w') as archivo:
             json.dump(Eventos.listaeventos,archivo)
     
+    def mostrar_info(posiciondata):
+        from centralizacion import centrar
+        import tkinter as tk
+        from tkinter import messagebox,ttk
+        ventanainfo = Toplevel(raiz)            
+        ventanainfo.geometry("250x250")
+        centrar(ventanainfo,250,250)
 
-    """
-    def obtener_data():
         import json
+        f = open("eventos.json")
         with open("eventos.json",'r') as archivo:
             datos=json.load(archivo)
-            datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
-            datas = json.loads(datajs)#objeto python
-        return datas
-    """    
+        datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
+        datas = json.loads(datajs)#objeto python
+        info=datas[posiciondata]
+        Label(ventanainfo,text=info)
 
 
 
@@ -178,36 +205,11 @@ def mostrar_calendario(numero_semana):
         y=y+1
         celda.config(fg="black",bg="white",font=("Verdana",13))
         celda.grid(padx=1,pady=1,row=0,column=y)
-
-        """
-        datas=Eventos.obtener_data()
-
-        listafechas=list()
-        for a in range(len(datas)):
-            aa=(datas[a])
-            for b in aa:
-                c=aa[b]
-                if b =="Fecha y hora":
-                    listafechas.append(c)
-
-        import datetime
-    
-        listadiasfechas=list()
-        listanumsem=list()
-
-        for b in listafechas:
-            datetime_object = datetime.datetime.strptime(b, '%d/%m/%Y,%H:%M:%S')
-            c=datetime_object.strftime("%d")
-            listadiasfechas.append(c)
-            ns=datetime_object.strftime("%w")#	Weekday as a number 0-6, 0 is Sunday
-            ns=ns+1
-            listanumsem.append(ns)
-            
-            
-        for c in range(0, 7):
-            cell =Label(frame3, width=10,text=c)
+        
+    for c in range(0, 7):
+            cell =Label(frame3, width=10)
             cell.grid(row=x, column=c)
-           """ 
+       
 
 
 def siguiente_semana():
@@ -243,64 +245,66 @@ def actualizar_datos():
     import random
 
     with open("eventos.json",'r') as archivo:
-            datos=json.load(archivo)
-            datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
-            datas = json.loads(datajs)#objeto python
-    
-    
+        datos=json.load(archivo)
+    datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
+    datas = json.loads(datajs)#objeto python
+    diasse=[]
+    numsse=[]
     for a in range(len(datas)):
         aa=(datas[a])
-    for b in aa:
-        c=aa[b]
-        if b =="Fecha y hora":
-            listafechas=c
-    import datetime
-    
-    datetime_object = datetime.datetime.strptime(listafechas, '%d/%m/%Y,%H:%M:%S')
-    d=datetime_object.strftime("%d")
-    ns=datetime_object.strftime("%w")#	Weekday as a number 0-6, 0 is Sunday
-    n=int(ns)
-    if n==0:
-        nss=7
-    else:
-        nss=n
-        listanumsem=nss
+        for b in aa:
+            c=aa[b]
+            if b =="Fecha y hora":
+                import datetime
+                datetime_object = datetime.datetime.strptime(c, '%d/%m/%Y,%H:%M:%S')
+                di=datetime_object.strftime("%d")#conseguir dia
+                d=int(di)
+                dss=datetime_object.strftime("%w")#conseguir dia de la semana,0-6, 0 es domingo
+                ds=int(dss) - 1
+                me=datetime_object.strftime("%m")#conseguir mes 1-12
+                m=int(me)
+                print(CalendarioPrincipal.numero_de_mes)
+                if m==CalendarioPrincipal.numero_de_mes+1:
+                    mes=CalendarioPrincipal.aniocompleto[m-1]
+                    for s in range(len(mes)):
+                        sem=mes[s]
+                        for i in range(len(sem)):
+                            if s==CalendarioPrincipal.numero_de_semana:
+                                if sem[i]==d:
+                                    coloraleatorio = random.choice(Eventos.colores)
+                                    diasse.append(d)
+                                    numsse.append(ds)
+                                    print(d)
+                                    print("eureka")
+                                    print("len",len(diasse))       
+                                    print(diasse)
+    r=0                                
+    for u in diasse:
+        c=diasse.count(u)
+        print(c)
+        if c ==1 :
+            print("una vez",u)
+            ind=diasse.index(u)
+            cell =Button(frame3, width=10,text="HOLA",bg=coloraleatorio)
+            cell.grid(row=0, column=numsse[ind])
+        else:
+            print("mas de una vez",u)
+            ind=diasse.index(u)
+            cell =Button(frame3, width=10,text="HOLA",bg=coloraleatorio)
+            cell.grid(row=r, column=numsse[ind])                               
+            r+=1                        
+        
+        #cell =Button(frame3, width=10,text="HOLA MUNDO",bg=coloraleatorio)
+        #cell.grid(row=0, column=0)
+                
+        
+            
+                
 
-    print("lita numeros",listanumsem)
-    print("listadiasfe",d)
-    
-    mes=CalendarioPrincipal.aniocompleto[CalendarioPrincipal.numero_de_mes]
-    semana=mes[CalendarioPrincipal.numero_de_semana]        
-    de=int(d)
-    num=listanumsem - 1
-
-    coloraleatorio = random.choice(Eventos.colores)
-
-    for x in semana:
-        a=int(x)
-        if a ==de:
-            r=Eventos.repeticiones
-            print("d",de)
-            cell =Button(frame3, width=10,text="HOLA MUNDO",bg=coloraleatorio)
-            cell.grid(row=r, column=x)
-            r=r+1
-            Eventos.repeticiones=r
-    """    y=0
-    for c in semana:
-        for l in range(len(listadiasfechas)):
-            dias=listadiasfechas[l]
-            num=listanumsem[l] - 1
-            if dias==c:
-                cell =Label(frame3, width=10,text=c)
-                cell.grid(row=l, column=num)
-            else:
-                cell =Label(frame3, width=10,text=c)
-                cell.grid(row=y, column=c)
-        y+=1
-    """
+      
 
 mostrar_calendario(CalendarioPrincipal.semana_actual)
-    
+actualizar_datos()    
 
 from tkinter import ttk
 #boton siguiente semana
