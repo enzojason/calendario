@@ -9,17 +9,17 @@ from tkinter import *
 #ventana principal
 raiz=tk.Tk()
 raiz.title("Calendario") #Cambiar el nombre de la ventana
-raiz.geometry("550x420")
-centrar(raiz,550,415)
+raiz.geometry("550x430")
+centrar(raiz,550,430)
 raiz.iconbitmap("calendario.ico") #Cambiar el icono
 raiz.resizable(0,0) #si la ventana es manipulable de x,y 0,0=NO redimencionar
-frame1 = Frame(raiz, bg="red")
+frame1 = Frame(raiz, bg="white")
 frame1.pack(ipadx= 50,ipady=50, fill=X)
 
-frame2 = Frame(raiz,bg="white")
-frame2.pack(ipadx= 50,ipady=1, fill=X,padx=10)
+frame2 = Frame(raiz,bg="black")
+frame2.pack(ipadx=5,ipady=1, fill=X,padx=10)
 
-frame3 = tk.Frame(raiz,bg="blue")
+frame3 = tk.Frame(raiz,bg="white")
 frame3.pack(ipadx= 50,ipady=130 ,padx=10, fill=X)
 
 #LABEL FECHA ACTUAL
@@ -37,11 +37,40 @@ a=x.strftime("%Y")
 anio=int(a)
 
 #label encabezado fecha
-encabezado=Label(raiz,text="Lunes     Martes     Miercoles  Jueves   Viernes     Sabado    Domingo")
-encabezado.place(x=20,y=75)
-encabezado.config(fg="black",bg="white",font=("Verdana",11))
+lunes=Label(raiz,text="Lunes",borderwidth=2,relief="solid")
+lunes.place(x=10,y=78)
+lunes.config(width=8,height=1)
+lunes.config(fg="black",bg="white",font=("Verdana",11))
 
+martes=Label(raiz,text="Martes",borderwidth=2,relief="solid")
+martes.place(x=86,y=78)
+martes.config(width=8,height=1)
+martes.config(fg="black",bg="white",font=("Verdana",11))
 
+Miercoles=Label(raiz,text="Miercoles",borderwidth=2,relief="solid")
+Miercoles.place(x=161,y=78)
+Miercoles.config(width=8,height=1)
+Miercoles.config(fg="black",bg="white",font=("Verdana",11))
+
+Jueves=Label(raiz,text="Jueves",borderwidth=2,relief="solid")
+Jueves.place(x=237,y=78)
+Jueves.config(width=8,height=1)
+Jueves.config(fg="black",bg="white",font=("Verdana",11))
+
+Viernes=Label(raiz,text="Viernes",borderwidth=2,relief="solid")
+Viernes.place(x=313,y=78)
+Viernes.config(width=8,height=1)
+Viernes.config(fg="black",bg="white",font=("Verdana",11))
+
+Sabado=Label(raiz,text="Sabado",borderwidth=2,relief="solid")
+Sabado.place(x=389,y=78)
+Sabado.config(width=8,height=1)
+Sabado.config(fg="black",bg="white",font=("Verdana",11))
+
+Domingo=Label(raiz,text="Domingo",borderwidth=2,relief="solid")
+Domingo.place(x=465,y=78)
+Domingo.config(width=8,height=1)
+Domingo.config(fg="black",bg="white",font=("Verdana",11))
 #clase evento 
 class Eventos():
     def __init__(self,titulo,fechayhora,importancia,fecha_recordatorio,duracion,descripcion="",etiquetas=""):
@@ -81,7 +110,7 @@ class Eventos():
     
     listadias=[]
     repeticiones=1
-    colores=["grey","green","blue","yellow","red","skyblue","springgreen","pink"]
+    colores=["grey","green","blue","yellow","red","skyblue","springgreen","pink","orange"]
     def agregar_evento():
         import json
         Eventos.listaeventos
@@ -198,13 +227,13 @@ def mostrar_calendario(numero_semana):
     y=0
     for x in semana:
         if x==0:
-            celda=Label(frame2,height=2,width=6,text="-",bg="grey",anchor="e")
+            celda=Label(frame2,height=2,width=6,text="-",bg="grey",anchor="center")
         
         else:
-            celda=Label(frame2,height=2,width=6,text=x,bg="grey",anchor="e")
+            celda=Label(frame2,height=2,width=6,text=x,bg="grey",anchor="center")
         y=y+1
         celda.config(fg="black",bg="white",font=("Verdana",13))
-        celda.grid(padx=1,pady=1,row=0,column=y)
+        celda.grid(padx=1,pady=1,row=0,column=y,ipadx=1)
         
     for c in range(0, 7):
             cell =Label(frame3, width=10)
@@ -240,6 +269,7 @@ def anterior_semana():
         s=CalendarioPrincipal.numero_de_semana - 1
         mostrar_calendario(s)
 
+    
 def actualizar_datos():
     import json
     import random
@@ -248,6 +278,8 @@ def actualizar_datos():
         datos=json.load(archivo)
     datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
     datas = json.loads(datajs)#objeto python
+
+    dataseleccionada=[]
     diasse=[]
     numsse=[]
     for a in range(len(datas)):
@@ -271,32 +303,39 @@ def actualizar_datos():
                         for i in range(len(sem)):
                             if s==CalendarioPrincipal.numero_de_semana:
                                 if sem[i]==d:
-                                    coloraleatorio = random.choice(Eventos.colores)
                                     diasse.append(d)
                                     numsse.append(ds)
-                                    print(d)
-                                    print("eureka")
-                                    print("len",len(diasse))       
-                                    print(diasse)
-    r=0                                
+                                    dataseleccionada.append(aa)
+
+    tituloselect=[]
+    for a in range(len(dataseleccionada)):
+        aa=(dataseleccionada[a])
+        for b in aa:
+            c=aa[b]
+            if b =="Titulo":
+                tituloselect.append(c)      
+                               
+    r=0        
+    i=0              
     for u in diasse:
+        import tkinter as tk
+        from tkinter import messagebox,ttk     
+        coloraleatorio = random.choice(Eventos.colores)
         c=diasse.count(u)
         print(c)
-        if c ==1 :
-            print("una vez",u)
-            ind=diasse.index(u)
-            cell =Button(frame3, width=10,text="HOLA",bg=coloraleatorio)
-            cell.grid(row=0, column=numsse[ind])
+        if c ==1 :           
+            cell =Label(frame3, width=10,text=tituloselect[i],bg=coloraleatorio)
+            cell.grid(row=0, column=numsse[i])
+            i+=1
         else:
-            print("mas de una vez",u)
-            ind=diasse.index(u)
-            cell =Button(frame3, width=10,text="HOLA",bg=coloraleatorio)
-            cell.grid(row=r, column=numsse[ind])                               
-            r+=1                        
-        
-        #cell =Button(frame3, width=10,text="HOLA MUNDO",bg=coloraleatorio)
-        #cell.grid(row=0, column=0)
-                
+            cell =Label(frame3, width=10,text=tituloselect[i],bg=coloraleatorio)
+            cell.grid(row=r, column=numsse[i])  
+            i+=1                             
+            r+=1
+                                   
+
+
+    
         
             
                 
