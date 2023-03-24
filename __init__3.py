@@ -13,10 +13,11 @@ raiz.geometry("550x430")
 centrar(raiz,550,430)
 raiz.iconbitmap("calendario.ico") #Cambiar el icono
 raiz.resizable(0,0) #si la ventana es manipulable de x,y 0,0=NO redimencionar
+raiz.config(bg="white")
 frame1 = Frame(raiz, bg="white")
-frame1.pack(ipadx= 50,ipady=50, fill=X)
+frame1.pack(ipadx= 50,ipady=51, fill=X)
 
-frame2 = Frame(raiz,bg="black")
+frame2 = Frame(raiz,bg="white")
 frame2.pack(ipadx=5,ipady=1, fill=X,padx=10)
 
 frame3 = tk.Frame(raiz,bg="white")
@@ -25,7 +26,7 @@ frame3.pack(ipadx= 50,ipady=130 ,padx=10, fill=X)
 #LABEL FECHA ACTUAL
 x=datetime.datetime.now()
 fecha=x.strftime("%A %d de %B %Y")
-labelfecha=Label(raiz,text=fecha)
+labelfecha=Label(raiz,text=fecha,bg="white")
 labelfecha.place(x=310,y=15)
 labelfecha.config(fg="black",font=("Verdana",12))
 #datos de la fecha actual
@@ -73,6 +74,7 @@ Domingo.config(width=8,height=1)
 Domingo.config(fg="black",bg="white",font=("Verdana",11))
 #clase evento 
 class Eventos():
+    iniciar=0
     def __init__(self,titulo,fechayhora,importancia,fecha_recordatorio,duracion,descripcion="",etiquetas=""):
         """Se crea el objeto evento"""
         self.titulo=titulo
@@ -82,6 +84,10 @@ class Eventos():
         self.duracion=duracion
         self.fecha_recordatorio=fecha_recordatorio
         self.etiquetas=etiquetas
+    def mostrarprincipal(n):
+        if n=="1":
+            return True
+        
     try:
         import json
         f = open("eventos.json")
@@ -93,7 +99,9 @@ class Eventos():
             a=open("eventos.json",'w')
             a.write("")
             listaeventos=[]
+            iniciar=0
         else:
+            mostrarprincipal("1")
             with open("eventos.json",'r') as archivo:
                 datos=json.load(archivo)
             datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
@@ -101,40 +109,26 @@ class Eventos():
             with open("eventos.json",'w') as archivo:
                 json.dump(datas,archivo)
                 listaeventos=datas
+            iniciar=1
 
+                
     except IOError:
-        print('File does not exist')
+        print('archivo no existe')
         a=open("eventos.json",'w')
         a.write("")
         listaeventos=[]
-    
+        
+
     listadias=[]
     repeticiones=1
-    colores=["grey","green","blue","yellow","red","skyblue","springgreen","pink","orange"]
+    colores=["yellow","skyblue","springgreen","pink","green","blue","grey","white"]
     def agregar_evento():
         import json
         Eventos.listaeventos
         with open ("eventos.json",'w') as archivo:
             json.dump(Eventos.listaeventos,archivo)
     
-    def mostrar_info(posiciondata):
-        from centralizacion import centrar
-        import tkinter as tk
-        from tkinter import messagebox,ttk
-        ventanainfo = Toplevel(raiz)            
-        ventanainfo.geometry("250x250")
-        centrar(ventanainfo,250,250)
-
-        import json
-        f = open("eventos.json")
-        with open("eventos.json",'r') as archivo:
-            datos=json.load(archivo)
-        datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
-        datas = json.loads(datajs)#objeto python
-        info=datas[posiciondata]
-        Label(ventanainfo,text=info)
-
-
+    
 
 class CalendarioPrincipal():
     def __init__(self,numero): 
@@ -177,6 +171,20 @@ class CalendarioPrincipal():
     aniocompleto.append(calendario.monthdayscalendar(2023,9))
 
     numero_de_mes=mes_actual-1
+    opciones = {
+    "Enero": ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'), 
+    "Febrero": ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28'),
+    "Marzo":('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'),
+    "Abril":('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'),
+    "Mayo":('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'),
+    "Junio":('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'),
+    "Julio":('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'),
+    "Agosto":('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'),
+    "Septiembre":('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'),
+    "Octubre":('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'),
+    "Noviembre":('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'),
+    "Diciembre":('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'),
+    }
 
     
 
@@ -191,11 +199,12 @@ def mostrar_calendario_mensual():
     raizm.focus_set()
     raizm.title("Calendario Mensual")
     raizm.geometry("500x400")
+    raizm.config(bg="white")
     centrar(raizm,500,400)
     mif=Frame(raizm)
     mif.pack(padx=10,pady=100)
     mif.config(width="550",height="720")
-    mif.config(bg="grey")
+    mif.config(bg="white")
 
     def mostrar(calendario):
         for f in range(len(calendario)):
@@ -203,7 +212,7 @@ def mostrar_calendario_mensual():
                 if calendario[f][c]==0:
                     pass
                 else:
-                    celda = Label(mif,height=2,width=8,text=calendario[f][c])
+                    celda = Label(mif,height=2,width=8,text=calendario[f][c],bg="white")
                     celda.grid(padx=2, pady=2, row=f, column=c)
     
     anio=CalendarioPrincipal.anio
@@ -226,19 +235,22 @@ def mostrar_calendario(numero_semana):
     CalendarioPrincipal.numero_de_semana=numero_semana
     y=0
     for x in semana:
-        if x==0:
-            celda=Label(frame2,height=2,width=6,text="-",bg="grey",anchor="center")
         
+        if x==0:
+            celda=Label(frame2,height=2,width=6,text="-",bg="white",anchor="center")
+        
+        elif x==CalendarioPrincipal.dia_actual and CalendarioPrincipal.numero_de_mes==CalendarioPrincipal.mes_actual - 1:
+                celda=Label(frame2,height=2,width=6,text=x,bg="white",anchor="center",borderwidth=2,relief="solid")
         else:
-            celda=Label(frame2,height=2,width=6,text=x,bg="grey",anchor="center")
+            celda=Label(frame2,height=2,width=6,text=x,bg="white",anchor="center")
         y=y+1
         celda.config(fg="black",bg="white",font=("Verdana",13))
         celda.grid(padx=1,pady=1,row=0,column=y,ipadx=1)
         
     for c in range(0, 7):
-            cell =Label(frame3, width=10)
+            cell =Label(frame3, width=10,bg="white")
             cell.grid(row=x, column=c)
-       
+     
 
 
 def siguiente_semana():
@@ -254,6 +266,7 @@ def siguiente_semana():
     else:
         s=CalendarioPrincipal.numero_de_semana + 1
         mostrar_calendario(s)
+        actualizar_datos()
 
 def anterior_semana():
     mm=len(CalendarioPrincipal.aniocompleto[CalendarioPrincipal.numero_de_mes])
@@ -262,88 +275,160 @@ def anterior_semana():
         c=CalendarioPrincipal.numero_de_mes - 1
         CalendarioPrincipal.numero_de_mes=c
         CalendarioPrincipal.numero_de_semana=0
-
         mostrar_calendario(CalendarioPrincipal.numero_de_semana)
+        
 
     else:
         s=CalendarioPrincipal.numero_de_semana - 1
+        CalendarioPrincipal.numero_de_semana=s
+        actualizar_datos()
         mostrar_calendario(s)
+        
 
-    
+
 def actualizar_datos():
     import json
     import random
+    f = open("eventos.json")
+    f.close()
+    ar=open("eventos.json",'r')
+    l=ar.readline()
+    ar.close
+    if l=="{}" or l=="" or l=="[]" or l==" ":
+        pass
+    else:
+        with open("eventos.json",'r') as archivo:
+            datos=json.load(archivo)
+        datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
+        datas = json.loads(datajs)#objeto python
 
-    with open("eventos.json",'r') as archivo:
-        datos=json.load(archivo)
-    datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
-    datas = json.loads(datajs)#objeto python
+        dataseleccionada=[]
+        diasse=[]
+        numsse=[]
+        for a in range(len(datas)):
+            aa=(datas[a])
+            for b in aa:
+                c=aa[b]
+                if b =="Fecha y hora":
+                    import datetime
+                    datetime_object = datetime.datetime.strptime(c, '%d/%m/%Y,%H:%M:%S')
+                    di=datetime_object.strftime("%d")#conseguir dia
+                    d=int(di)
+                    dss=datetime_object.strftime("%w")#conseguir dia de la semana,0-6, 0 es domingo
+                    ds=int(dss) - 1
+                    me=datetime_object.strftime("%m")#conseguir mes 1-12
+                    m=int(me)
+                    
+                    if m==CalendarioPrincipal.numero_de_mes+1:
+                        mes=CalendarioPrincipal.aniocompleto[m-1]
+                        for s in range(len(mes)):
+                            sem=mes[s]
+                            for i in range(len(sem)):
+                                if s==CalendarioPrincipal.numero_de_semana:
+                                    if sem[i]==d:
+                                        diasse.append(d)
+                                        numsse.append(ds)
+                                        dataseleccionada.append(aa)
 
-    dataseleccionada=[]
-    diasse=[]
-    numsse=[]
-    for a in range(len(datas)):
-        aa=(datas[a])
-        for b in aa:
-            c=aa[b]
-            if b =="Fecha y hora":
-                import datetime
-                datetime_object = datetime.datetime.strptime(c, '%d/%m/%Y,%H:%M:%S')
-                di=datetime_object.strftime("%d")#conseguir dia
-                d=int(di)
-                dss=datetime_object.strftime("%w")#conseguir dia de la semana,0-6, 0 es domingo
-                ds=int(dss) - 1
-                me=datetime_object.strftime("%m")#conseguir mes 1-12
-                m=int(me)
-                print(CalendarioPrincipal.numero_de_mes)
-                if m==CalendarioPrincipal.numero_de_mes+1:
-                    mes=CalendarioPrincipal.aniocompleto[m-1]
-                    for s in range(len(mes)):
-                        sem=mes[s]
-                        for i in range(len(sem)):
-                            if s==CalendarioPrincipal.numero_de_semana:
-                                if sem[i]==d:
-                                    diasse.append(d)
-                                    numsse.append(ds)
-                                    dataseleccionada.append(aa)
+        tituloselect=[]
+        for a in range(len(dataseleccionada)):
+            aa=(dataseleccionada[a])
+            for b in aa:
+                c=aa[b]
+                if b =="Titulo":
+                    tituloselect.append(c)    
 
-    tituloselect=[]
-    for a in range(len(dataseleccionada)):
-        aa=(dataseleccionada[a])
-        for b in aa:
-            c=aa[b]
-            if b =="Titulo":
-                tituloselect.append(c)      
-                               
-    r=0        
-    i=0              
-    for u in diasse:
-        import tkinter as tk
-        from tkinter import messagebox,ttk     
-        coloraleatorio = random.choice(Eventos.colores)
-        c=diasse.count(u)
-        print(c)
-        if c ==1 :           
-            cell =Label(frame3, width=10,text=tituloselect[i],bg=coloraleatorio)
-            cell.grid(row=0, column=numsse[i])
-            i+=1
-        else:
-            cell =Label(frame3, width=10,text=tituloselect[i],bg=coloraleatorio)
-            cell.grid(row=r, column=numsse[i])  
-            i+=1                             
-            r+=1
+        importselect=[]
+        for a in range(len(dataseleccionada)):
+            aa=(dataseleccionada[a])
+            for b in aa:
+                c=aa[b]
+                if b =="Importancia":
+                    importselect.append(c)              
+                                
+        r=0        
+        i=0              
+        for u in diasse:
+            import tkinter as tk
+            from tkinter import messagebox,ttk     
+            
+            c=diasse.count(u)
+
+            if c ==1 :
+                if importselect[i]=="Importante":
+                    cell =Label(frame3, width=10,height=2,text=tituloselect[i],bg="red")
+                    cell.grid(row=0, column=numsse[i])
+                    i+=1
+                else:
+                    cell =Label(frame3, width=10,height=2,text=tituloselect[i],bg=Eventos.colores[i])
+                    cell.grid(row=0, column=numsse[i])
+                    i+=1  
+
+            else:
+                if importselect[i]=="Importante":
+                    cell =Label(frame3, width=10,height=2,text=tituloselect[i],bg="red")
+                    cell.grid(row=r, column=numsse[i])
+                    i+=1
+                    r+=1
+                else:
+                    cell =Label(frame3, width=10,height=3,text=tituloselect[i],bg=Eventos.colores[i])
+                    cell.grid(row=r, column=numsse[i])  
+                    i+=1                             
+                    r+=1
                                    
 
 
     
         
-            
-                
+def mostrar_recordatorios():
+    import tkinter as tk
+    from tkinter import messagebox,ttk
+    ventanamr = Toplevel(raiz)
+    ventanamr.focus_set()
+    ventanamr.title("Recordatorios")
+    ventanamr.geometry("270x350")
+    ventanamr.config(bg="white")
+    centrar(ventanamr,270,350)
+    ventanamr.resizable(0,0)
+    fr=Frame(ventanamr)
+    fr.config(bg="red")
+    fr.pack(ipadx=0,ipady=0, fill=X,pady=30,padx=2)
+    import json
+
+    with open("eventos.json",'r') as archivo:
+        datos=json.load(archivo)
+    datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
+    datas = json.loads(datajs)#objeto python 
+    tits=list()
+    fechayhorar=list()
+
+    for a in range(len(datas)):
+        aa=(datas[a])
+        for b in aa:
+            c=aa[b]
+            if b =="Fecha Recordatorio":
+                fechayhorar.append(c)
+            elif b=="Titulo":
+                tits.append(c)
+
+    print("f",fechayhorar)
+
+    for a in range(len(tits)):
+        cell =Label(fr,width=15,height=3,text=tits[a],bg="white",padx=5)
+        cell.grid(row=a, column=0)
+
+    for b in range(len(tits)):
+        celld =Label(fr,width=25,height=3,text=fechayhorar[b],bg="white",anchor="w")
+        celld.grid(row=b, column=2)
+    
+    t=Label(ventanamr,text="Titulo",bg="white").place(x=40,y=5)
+    Label(ventanamr,text="Fecha Recordatorio",bg="white").place(x=140,y=5)
 
       
-
+actualizar_datos()
 mostrar_calendario(CalendarioPrincipal.semana_actual)
-actualizar_datos()    
+
+     
 
 from tkinter import ttk
 #boton siguiente semana
@@ -357,18 +442,21 @@ ante.pack()
 ante.place(x=15,y=295)
 
 def abrir_ventana():
+    
     from centralizacion import centrar
     import tkinter as tk
     from tkinter import messagebox,ttk
     ventananueva = Toplevel(raiz)
     ventananueva.focus_set()
     ventananueva.title("Agregar evento")
-    ventananueva.geometry("270x450")
-    centrar(ventananueva,270,450)
+    ventananueva.geometry("250x450")
+    centrar(ventananueva,250,450)
     ##ventananueva.iconbitmap("calendario.ico")
     ##radioValue = tk.IntVar()
     radio = tk.IntVar()
     radio.set(1)
+    varfecha = tk.IntVar()
+    varfecha.set(2)
     #CREACION DE HORAS,DIAS Y MESES EN LISTA
     x=datetime.datetime.now()
     d=x.strftime("%d")
@@ -380,7 +468,7 @@ def abrir_ventana():
     meses=list()
     horas=list()
     minutos=list()
-    
+    diass=list()
     for y in range(13):
         if y==0:
             pass
@@ -399,6 +487,12 @@ def abrir_ventana():
         else:
             minutos.append(r)    
 
+    for j in range(31):
+        if j == 0:
+            pass
+        else:
+            diass.append(j)
+
     #Label nuevo evento
     ne=Label(ventananueva,text="Nuevo Evento")
     ne.place(x=25,y=15)
@@ -413,8 +507,12 @@ def abrir_ventana():
     tituloe.focus_set()
     tituloe.config(width=25)
     tituloe.place(x=65,y=75)
+    
 
-    #Label fecha
+
+    
+
+    #Label fecha 
     fecha=Label(ventananueva,text="Fecha:")
     fecha.place(x=20,y=115)
     fechan=x.strftime("%x")
@@ -424,6 +522,7 @@ def abrir_ventana():
     horal.place(x=20,y=140)
     horaln=x.strftime("%X")
     Label(ventananueva,text=horaln).place(x=65,y=140)
+    
 
     #label duracion
     duracionl=Label(ventananueva,text="Duración --->")
@@ -557,7 +656,8 @@ def abrir_ventana():
     boto_salir=ttk.Button(ventananueva,text="Salir",command=salir_vn)
     boto_salir.pack()
     boto_salir.place(x=20,y=415)   
-        
+    actualizar_datos()
+
 from tkinter import messagebox
 def error_archivo():
     messagebox.showwarning("Error", "No existen eventos")
@@ -633,7 +733,7 @@ def eliminar_evento():
 
         #Label 
         Label(ventanam,text="Seleccione el Evento \n a eliminar:").place(x=10,y=25)   
-            
+        actualizar_datos()
             
 
 def modificar_evento():
@@ -650,8 +750,8 @@ def modificar_evento():
         ventanamod = Toplevel(raiz)
         ventanamod.focus_set()
         ventanamod.title("Modificar evento")
-        ventanamod.geometry("200x200")
-        centrar(ventanamod,200,200)
+        ventanamod.geometry("180x180")
+        centrar(ventanamod,180,180)
         #listas para combox de titulos y items para modificar
         import json
         with open("eventos.json",'r') as archivo:
@@ -664,7 +764,6 @@ def modificar_evento():
         for a in range(len(datas)):
             aa=(datas[a])
             for b in aa:
-                listaitems.append(b)
                 c=aa[b]
                 if b == "Titulo":
                     listatitulos.append(c)
@@ -677,8 +776,9 @@ def modificar_evento():
 
             Label(f,text="Seleccione item a modificar").place(x=15,y=40)
 
+            items=['Descripcion', 'Duracion', 'Fecha Recordatorio', 'Fecha y hora', 'Importancia', 'Titulo']
             #combox modificar
-            comboitem=ttk.Combobox(ventanamod,values=listaitems)
+            comboitem=ttk.Combobox(ventanamod,values=items)
             comboitem.place(x=40,y=80)
             comboitem.config(width="14")
 
@@ -687,54 +787,115 @@ def modificar_evento():
                 fe = Toplevel(raiz)
                 fe.focus_set()
                 fe.title("Modificar evento")
-                fe.geometry("200x200")
-                centrar(fe,200,200)
+                fe.geometry("250x300")
+                centrar(fe,250,300)
                 a=comboitem.get()
-                Label(fe,text="Ingrese el nuevo valor de \n"+a).place(x=20,y=40)
-                nuevo=Entry(fe,width="25")
-                nuevo.pack()
-                nuevo.place(x=22,y=100)
-                nuevo.insert(0, "Nueva@ "+a)
-                nuevo.focus_set()
+                Label(fe,text="Ingrese el nuevo valor de \n"+a).place(x=20,y=20)
+                horas=list()
+                minutos=list()
 
-                def salirc():
-                    fe.destroy()
+                for z in range(24):
+                    if z==0:
+                        pass 
+                    else:
+                        horas.append(z)
+
+                for r in range(60):
+                    if r==0:
+                        pass
+                    else:
+                        minutos.append(r)   
+                     
+
+                if a=="Fecha y hora":
+                    #combo fecha
+                    #label dias
+                    Label(fe,text="Mes:").place(x=40,y=80)
+                    Label(fe,text="Dias:").place(x=40,y=120)
+                    def on_combobox_select(event):
+                        combobox1.set("")
+                        combobox1.config(values=CalendarioPrincipal.opciones[combobox.get()])
+
+                    combobox = ttk.Combobox(
+                    fe, width="11", state="readonly", values=tuple(CalendarioPrincipal.opciones.keys()))
+                    combobox.place(x="80", y="80")
+                    combobox.bind("<<ComboboxSelected>>", on_combobox_select)  
+                    combobox1 = ttk.Combobox(
+                    fe, width="4", state="readonly") 
+                    combobox1.place(x="80",y="120")
+
+                    #label horas
+                    Label(fe,text="Hora:").place(x=40,y=160)
+
+                    #horas
+                    combohorafyh =ttk.Combobox(fe,values=horas)
+                    combohorafyh.place(x=80,y=160)
+                    combohorafyh.config(width="3")
+                    combohorafyh.insert(0,1)
+                    #minutos
+                    combominutofyh =ttk.Combobox(fe,values=minutos)
+                    combominutofyh.place(x=147,y=160)
+                    combominutofyh.config(width="3")
+                    combominutofyh.insert(0,"00")
+                    Label(fe,text="hs").place(x=120,y=160)
+                    Label(fe,text="min").place(x=185,y=160)                    
+                   
+     
+                elif a=="Fecha Recordatorio":
+                    nuevo.insert(END,"dd/mm/2023,hh:mm")
+
+                else:
+                    nuevo=Entry(fe,width="25")
+                    nuevo.pack()
+                    nuevo.place(x=22,y=100)
+                    nuevo.focus_set()
+
                 
                 def guardarcambios():
+                    fechayhora=combobox.get()+"/"+combobox1.get()+"/"+"2023"+","+combohorafyh.get()+":"+combominutofyh.get()+":"+"00"
+
+                    fechayhoraelegida = datetime.datetime.strptime(fechayhora, '%d/%m/%Y,%H:%M:%S')
                     from tkinter import messagebox
                     messagebox.showinfo(message="Cambios Guardados", title="Modificar Calendario")
                     import json
                     with open("eventos.json",'r') as archivo:
                         datos=json.load(archivo)
-                        datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
-                        datas = json.loads(datajs)#objeto python
+                    datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
+                    datas = json.loads(datajs)#objeto python
                     
+                    
+                    #elegir titulo a modificar y modificarlo
+                    for i in range(len(listatitulos)):
+                        if listatitulos[i] == combotitulo.get():
+                            tituloelegido=i
+
+                    #modifica el titulo en el entry nuevo
+                    aa=(datas[tituloelegido])
+
+                    for b in aa:
+                        if b=="Fecha y hora":
+                            
+                            aa[b]=fechayhoraelegida
+                        if b == comboitem.get():
+                            #Aqui se pone en a el nuevo titulo a cambiar ejemplo puse un input
+                            aa[b]=nuevo.get()
+
                     with open("eventos.json",'w') as archivo:
-                        #elegir titulo a modificar
-                        for i in range(len(listatitulos)):
-                            if listatitulos[i] == combotitulo.get():
-                                tituloelegido=i
-
-                        #modifica el titulo
-                        aa=(datas[tituloelegido])
-                        for b in aa:
-                            if b == comboitem.get():
-                                #Aqui se pone en a el nuevo titulo a cambiar ejemplo puse un input
-                                aa[b]=nuevo.get()
-
                         #guardar la modificacion
                         json.dump(datas,archivo, indent=4)
                         Eventos.listaeventos=[]
                         Eventos.listaeventos=[datas]
-                #boton salir
-                bs=ttk.Button(fe,text="Salir",command=salirc)
-                bs.pack()
-                bs.place(x=10,y=140)
 
-                #boton guardar
-                bg=ttk.Button(fe,text="Guardar",command=guardarcambios)
-                bg.pack()
-                bg.place(x=100,y=140)
+
+                    #boton salir
+                    bs=ttk.Button(fe,text="Atras")
+                    bs.pack()
+                    bs.place(x=40,y=220)
+
+                    #boton guardar
+                    bg=ttk.Button(fe,text="Guardar",command=guardarcambios)
+                    bg.pack()
+                    bg.place(x=130,y=220)
 
             ci=ttk.Button(ventanamod,text="Aceptar",command=mostrar_casillero)
             ci.place(x=50,y=140)
@@ -748,23 +909,34 @@ def modificar_evento():
         #boton seleccionar
         bc=ttk.Button(ventanamod,text="Seleccionar",command=selecciontitulo)
         bc.place(x=50,y=140)
-
+        actualizar_datos()
 #boton modificar evento
-boton2=Button(raiz,text="Modificar\n Evento",command=modificar_evento)
-boton2.config(width=9,height=3)
-boton2.place(x=15,y=325)
+boton2=ttk.Button(raiz,text="Modificar\n Evento",command=modificar_evento)
+boton2.place(x=120,y=335)
 
 #boton eliminar evento
-boton3=Button(raiz,text="Eliminar\n Evento",command=eliminar_evento)
-boton3.config(width=9,height=3)
-boton3.place(x=455,y=325)
-
+boton3=ttk.Button(raiz,text="Eliminar\n Evento",command=eliminar_evento)
+boton3.place(x=350,y=335)
 
     
 #boton agregar evento
 from tkinter import ttk
-boton1=ttk.Button(raiz,text="Agregar Evento",command=abrir_ventana)
+boton1=ttk.Button(raiz,text="Agregar\n Evento",command=abrir_ventana)
 boton1.pack()
-boton1.place(x=220,y=330)
+boton1.place(x=235,y=335)
 
+#boton mostrar recordatorios
+botonr=ttk.Button(raiz,text="Recordatorios",command=mostrar_recordatorios)
+botonr.pack()
+botonr.place(x=5,y=40)
+
+col=Label(raiz,bg="red")
+col.config(width=1,height=1)
+col.place(x=25,y=400)
+Label(raiz,text="Importante",bg="white").place(x=40,y=400)
+
+coh=Label(raiz,bg="white",borderwidth=2,relief="solid")
+coh.config(width=1,height=1)
+coh.place(x=150,y=400)
+Label(raiz,text="Dia Actual",bg="white").place(x=165,y=400)
 raiz.mainloop()
