@@ -102,7 +102,7 @@ class Eventos():
 
                 
     except IOError:
-        print('archivo no existe')
+        #en caso de no exister un archivo eventos.json en el directorio, lo crea
         a=open("eventos.json",'w')
         a.write("")
         listaeventos=[]
@@ -185,6 +185,9 @@ class CalendarioPrincipal():
 
 #funcion que muestra el calendario SEMANAL
 def mostrar_calendario_mensual():
+    class Mes():
+        numero=int()
+
     from centralizacion import centrar
     import tkinter as tk
     from tkinter import messagebox,ttk
@@ -193,29 +196,120 @@ def mostrar_calendario_mensual():
     raizm.resizable(0,0)
     raizm.focus_set()
     raizm.title("Calendario Mensual")
-    raizm.geometry("500x400")
+    raizm.geometry("500x350")
     raizm.config(bg="white")
-    centrar(raizm,500,400)
+    centrar(raizm,500,350)
     mif=Frame(raizm)
-    mif.pack(padx=10,pady=100)
+    mif.pack(padx=5,pady=60)
     mif.config(width="550",height="720")
     mif.config(bg="white")
 
-    def mostrar(calendario):
+    def mostrar(mes):
+        Label(raizm,text="L          M         M         J          V         S          D",font=("verdana","11"),bg="white").place(x=70,y=40)
+        nm=str(CalendarioPrincipal.mesesnombre[mes-1])
+        nome=Label(raizm,text=nm.capitalize(),font=("verdana","14"),bg="white",width="12")
+        nome.place(x=180,y=5)
+        calendario=calendar.monthcalendar(2023,mes)
+        Mes.numero=mes
+
+        importselect=[]
+        dataseleccionada=[]
+        diasconseguidos=[]
+        mesconseguidos=[]
+        nsconseguido=[]
+        import json
+        f = open("eventos.json")
+        f.close()
+        ar=open("eventos.json",'r')
+        l=ar.readline()
+        ar.close
+        if l=="{}" or l=="" or l=="[]" or l==" ":
+            for f in range(len(calendario)):
+            #crea los labels del calendario mensual y los asigna sus posiciones y colores
+                for c in range(0, 7):
+                    diac=calendario[f][c]
+                    if calendario[f][c]==0:
+                        celda = Label(mif,height=2,width=6,text="-",bg="white")
+                        celda.config(fg="black",font=("Verdana",9))
+                        celda.grid(padx=2, pady=2, row=f, column=c)
+                    else:
+                        if diac==CalendarioPrincipal.dia_actual and Mes.numero==CalendarioPrincipal.numero_de_mes+1:
+                            celda = Label(mif,height=2,width=6,text=calendario[f][c],bg="white",borderwidth="2",relief="solid")
+                            celda.config(fg="black",font=("Verdana",9))
+                            celda.grid(padx=2, pady=2, row=f, column=c)
+            pass
+        else:
+            with open("eventos.json",'r') as archivo:
+                datos=json.load(archivo)
+            datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
+            datas = json.loads(datajs)#objeto python
+
+            for a in range(len(datas)):
+                aa=datas[a]
+                for b in aa:
+                    c=aa[b]
+                    if b =="Fecha y hora":
+                        import datetime
+                        datetime_object = datetime.datetime.strptime(c,'%d/%m/%Y,%H:%M:%S')
+                        di=datetime_object.strftime("%d")#conseguir dia
+                        d=int(di)
+                        diasconseguidos.append(d)
+                        me=datetime_object.strftime("%m")#conseguir mes 1-12
+                        m=int(me)
+                        mesconseguidos.append(m)
+                        dataseleccionada.append(aa)
+
+            #selecciona la importancia de los datos seleccionados anteriormente
+            for af in range(len(dataseleccionada)):
+                aaf=dataseleccionada[af]
+                for bf in aaf:
+                    c=aaf[bf]
+                    if bf =="Importancia":
+                        importselect.append(c)
+
         for f in range(len(calendario)):
+            #crea los labels del calendario mensual y los asigna sus posiciones y colores
             for c in range(0, 7):
+                diac=calendario[f][c]
                 if calendario[f][c]==0:
-                    pass
-                else:
-                    celda = Label(mif,height=2,width=8,text=calendario[f][c],bg="white")
+                    celda = Label(mif,height=2,width=6,text="-",bg="white")
+                    celda.config(fg="black",font=("Verdana",9))
                     celda.grid(padx=2, pady=2, row=f, column=c)
+                else:
+                    if diac==CalendarioPrincipal.dia_actual and Mes.numero==CalendarioPrincipal.numero_de_mes+1:
+                        celda = Label(mif,height=2,width=6,text=calendario[f][c],bg="white",borderwidth="2",relief="solid")
+                        celda.config(fg="black",font=("Verdana",9))
+                        celda.grid(padx=2, pady=2, row=f, column=c)
+                    else:
+                        celda = Label(mif,height=2,width=6,text=calendario[f][c],bg="white")
+                        celda.config(fg="black",font=("Verdana",9))
+                        celda.grid(padx=2, pady=2, row=f, column=c)
+                    for k in range(len(diasconseguidos)):
+                        if diac==diasconseguidos[k] and Mes.numero==mesconseguidos[k]:
+                            if importselect[k]=="Importante":
+                                celda.config(fg="black",bg="red")
+                            else:
+                                celda.config(fg="black",bg=Eventos.colores[k])                
+                    
+
+                    
+                
+
     
-    anio=CalendarioPrincipal.anio
-    mes=CalendarioPrincipal.mes_actual
-    calendario=calendar.monthcalendar(anio,mes)
-    mostrar(calendario)
+    
+    mostrar(CalendarioPrincipal.mes_actual)
+    def mes_siguiente():
+        n=Mes.numero + 1
+        mostrar(n)
 
+    def mes_anterior():
+        ne=Mes.numero - 1
+        mostrar(ne)
 
+    mes_s=ttk.Button(raizm,text="Mes Anterior",command=mes_anterior)
+    mes_s.place(x=15,y=300)
+    mes_a=ttk.Button(raizm,text="Mes Siguiente",command=mes_siguiente)
+    mes_a.place(x=405,y=300)
 from tkinter import ttk
 
 #BOTON CAMBIAR EL CALENDARIO A MENSUAL
@@ -223,11 +317,14 @@ cambiar=ttk.Button(raiz,text="Calendario Mensual",command=mostrar_calendario_men
 cambiar.place(x=5,y=10)
 
 
-
+#BOTON CAMBIAR EL CALENDARIO A MENSUAL
+cambiar=ttk.Button(raiz,text="Calendario Mensual",command=mostrar_calendario_mensual)
+cambiar.place(x=5,y=10)
 def mostrar_calendario(numero_semana):
     mes=CalendarioPrincipal.aniocompleto[CalendarioPrincipal.numero_de_mes]
     semana=mes[numero_semana]
     CalendarioPrincipal.numero_de_semana=numero_semana
+
     y=0
     for x in semana:
         if x==0:
@@ -241,10 +338,16 @@ def mostrar_calendario(numero_semana):
         celda.config(fg="black",bg="white",font=("Verdana",13))
         celda.grid(padx=1,pady=1,row=0,column=y,ipadx=1)
 
-    #crea los labels de los dias de    
-    for c in range(0, 7):
-            cell =Label(frame3, width=10,bg="white")
-            cell.grid(row=x, column=c)
+    #crea los labels de los dias de  semana    
+    for c in range(len(semana)):
+            cell =Label(frame3, width=10,height=3,bg="white")
+            cell.grid(row=0, column=c)
+
+    for d in range(len(semana)):
+            cell =Label(frame3, width=10,height=3,bg="white")
+            cell.grid(row=1, column=d)
+
+
     #labels calendario    
     import json
     f = open("eventos.json")
@@ -260,9 +363,13 @@ def mostrar_calendario(numero_semana):
         datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
         datas = json.loads(datajs)#objeto python
 
+        importselect=[]
         dataseleccionada=[]
-        diasse=[]
-        numsse=[]
+        diasconseguidos=[]
+        mesconseguidos=[]
+        nsconseguido=[]
+        tituloselect=[]
+
         for a in range(len(datas)):
             aa=datas[a]
             for b in aa:
@@ -272,69 +379,61 @@ def mostrar_calendario(numero_semana):
                     datetime_object = datetime.datetime.strptime(c,'%d/%m/%Y,%H:%M:%S')
                     di=datetime_object.strftime("%d")#conseguir dia
                     d=int(di)
+                    diasconseguidos.append(d)
                     dss=datetime_object.strftime("%w")#conseguir dia de la semana,0-6, 0 es domingo
-                    ds=int(dss) - 1
+                    ds=int(dss)
+                    if ds==0:
+                        ds=6
+                    else:
+                        ds=ds-1
+                    nsconseguido.append(ds)
                     me=datetime_object.strftime("%m")#conseguir mes 1-12
                     m=int(me)
-                    print("numero de mes cp+1  ",CalendarioPrincipal.numero_de_mes)
-                    print("numero de semana cp ",CalendarioPrincipal.numero_de_semana)
-                    if m==CalendarioPrincipal.numero_de_mes+1:
-                        mes=CalendarioPrincipal.aniocompleto[m-1]
-                        for s in range(len(mes)):
-                            sem=mes[s]
-                            for i in range(len(sem)):
-                                if s==CalendarioPrincipal.numero_de_semana and m==CalendarioPrincipal.numero_de_mes+1 :
-                                    if sem[i]==d:
-                                        diasse.append(d)
-                                        numsse.append(ds)
-                                        dataseleccionada.append(aa)
+                    mesconseguidos.append(m)
+                    dataseleccionada.append(aa)
 
-        tituloselect=[]
-        for a in range(len(dataseleccionada)):
-            aa=(dataseleccionada[a])
-            for b in aa:
-                c=aa[b]
-                if b =="Titulo":
-                    tituloselect.append(c)    
+        for af in range(len(dataseleccionada)):
+                aaf=dataseleccionada[af]
+                for bf in aaf:
+                    c=aaf[bf]
+                    if bf =="Importancia":
+                        importselect.append(c)
+                    if bf=="Titulo":
+                        tituloselect.append(c)
 
-        importselect=[]
-        for a in range(len(dataseleccionada)):
-            aa=(dataseleccionada[a])
-            for b in aa:
-                c=aa[b]
-                if b =="Importancia":
-                    importselect.append(c)              
-                                
-        r=0        
-        i=0              
-        for u in diasse:
-            import tkinter as tk
-            from tkinter import messagebox,ttk     
-            
-            c=diasse.count(u)
-
-            if c ==1 :
-                if importselect[i]=="Importante":
-                    cell =Label(frame3, width=10,height=2,text=tituloselect[i],bg="red")
-                    cell.grid(row=0, column=numsse[i])
-                    i+=1
-                else:
-                    cell =Label(frame3, width=10,height=2,text=tituloselect[i],bg=Eventos.colores[i])
-                    cell.grid(row=0, column=numsse[i])
-                    i+=1  
-
-            else:
-                if importselect[i]=="Importante":
-                    cell =Label(frame3, width=10,height=2,text=tituloselect[i],bg="red")
-                    cell.grid(row=r, column=numsse[i])
-                    i+=1
-                    r+=1
-                else:
-                    cell =Label(frame3, width=10,height=3,text=tituloselect[i],bg=Eventos.colores[i])
-                    cell.grid(row=r, column=numsse[i])  
-                    i+=1                             
-                    r+=1
      
+        mms=CalendarioPrincipal.numero_de_mes+1
+
+
+        r=0
+        
+        for i in range(len(semana)):
+            
+            for j in range(len(diasconseguidos)):
+                c=diasconseguidos.count(diasconseguidos)    
+                if diasconseguidos[j]==semana[i] and mesconseguidos[j]==mms:
+                    
+                    if c==1:
+                        if importselect[j]=="Importante":
+                            cell =Label(frame3, width=10,height=2,text=tituloselect[j],bg="red")
+                            cell.grid(row=0, column=nsconseguido[j])
+                        else:
+                            cell =Label(frame3, width=10,height=2,text=tituloselect[j],bg=Eventos.colores[j])
+                            cell.grid(row=0, column=nsconseguido[j])
+                    else:
+                
+                        if importselect[j]=="Importante":
+                            cell =Label(frame3, width=10,height=2,text=tituloselect[j],bg="red")
+                            cell.grid(row=r, column=nsconseguido[j])
+                            r+=1
+                        else:
+                            cell =Label(frame3, width=10,height=3,text=tituloselect[j],bg=Eventos.colores[j])                         
+                            cell.grid(row=r, column=nsconseguido[j])
+                            r+=1
+
+
+     
+       
 
 
 def siguiente_semana():
@@ -349,80 +448,114 @@ def siguiente_semana():
 
     else:
         s=CalendarioPrincipal.numero_de_semana + 1
+
         mostrar_calendario(s)
 
 def anterior_semana():
-    mm=len(CalendarioPrincipal.aniocompleto[CalendarioPrincipal.numero_de_mes])
     
-    if CalendarioPrincipal.numero_de_semana - 1 == mm:
+    
+    if CalendarioPrincipal.numero_de_semana - 1 == 0:
         c=CalendarioPrincipal.numero_de_mes - 1
         CalendarioPrincipal.numero_de_mes=c
-        CalendarioPrincipal.numero_de_semana=0
+        
+        mr=CalendarioPrincipal.aniocompleto[CalendarioPrincipal.numero_de_mes]
+        
+        ns=len(mr) - 1
+        CalendarioPrincipal.numero_de_semana=ns
+
         mostrar_calendario(CalendarioPrincipal.numero_de_semana)
         
-
+    if CalendarioPrincipal.numero_de_semana==0:
+        c=CalendarioPrincipal.numero_de_mes - 1
+        CalendarioPrincipal.numero_de_mes=c
+        mr=CalendarioPrincipal.aniocompleto[CalendarioPrincipal.numero_de_mes]
+        ss=len(mr) - 1
+        mostrar_calendario(ss)
+    
     else:
         s=CalendarioPrincipal.numero_de_semana - 1
         CalendarioPrincipal.numero_de_semana=s
         mostrar_calendario(s)
-        
 
 
-
+                            
     
-                                   
-
-
-    
-        
 def mostrar_recordatorios():
+    
     import tkinter as tk
     from tkinter import messagebox,ttk
-    ventanamr = Toplevel(raiz)
-    ventanamr.focus_set()
-    ventanamr.title("Recordatorios")
-    ventanamr.geometry("270x350")
-    ventanamr.config(bg="white")
-    centrar(ventanamr,270,350)
-    ventanamr.resizable(0,0)
-    fr=Frame(ventanamr)
-    fr.config(bg="red")
-    fr.pack(ipadx=0,ipady=0, fill=X,pady=30,padx=2)
-    import json
+    f = open("eventos.json")
+    f.close()
+    ar=open("eventos.json",'r')
+    l=ar.readline()
+    ar.close
+    if l=="{}" or l=="" or l=="[]" or l==" ":
+        messagebox.showwarning("Error", "No existen eventos")
+    else:  
+        ventanamr = Toplevel(raiz)
+        ventanamr.focus_set()
+        ventanamr.title("Recordatorios")
+        ventanamr.geometry("270x350")
+        ventanamr.config(bg="white")
+        centrar(ventanamr,270,350)
+        ventanamr.resizable(0,0)
+        fr=Frame(ventanamr)
+        fr.config(bg="white")
+        fr.pack(ipadx=0,ipady=0, fill=X,pady=30,padx=2)
+        import json
 
-    with open("eventos.json",'r') as archivo:
-        datos=json.load(archivo)
-    datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
-    datas = json.loads(datajs)#objeto python 
-    tits=list()
-    fechayhorar=list()
+        with open("eventos.json",'r') as archivo:
+            datos=json.load(archivo)
+        datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
+        datas = json.loads(datajs)#objeto python 
+        tits=list()
+        fechayhorar=list()
 
-    for a in range(len(datas)):
-        aa=(datas[a])
-        for b in aa:
-            c=aa[b]
-            if b =="Fecha Recordatorio":
-                fechayhorar.append(c)
-            elif b=="Titulo":
-                tits.append(c)
+        for a in range(len(datas)):
+            aa=(datas[a])
+            for b in aa:
+                c=aa[b]
+                if b =="Fecha Recordatorio":
+                    fechayhorar.append(c)
+                elif b=="Titulo":
+                    tits.append(c)
 
-    print("f",fechayhorar)
+        #funcion que muestra info del boton tocado
+        def mostrarinfo():
+            hola=Toplevel(fr)
+            hola.config(bg="white")
+            from centralizacion import centrar
+            centrar(hola,300,230)
+            hola.focus_set()
+            i=str(datas[a])
+            inf=i.replace(",","\n")
+            info=inf.replace("'"," ")
+            infos=info.replace("{"," ")
+            infor=infos.replace("}"," ")
+            information=Label(hola,text=infor,font=("Verdana", 12),bg="white")
+            information.place(x=5,y=10)
+        for a in range(len(tits)):
+            if a%2==0:
+                color="#CDCDB7"
+            else:
+                color="#FFFFD3"
 
-    for a in range(len(tits)):
-        cell =Label(fr,width=15,height=3,text=tits[a],bg="white",padx=5)
-        cell.grid(row=a, column=0)
+            cell =Label(fr,width=15,height=3,text=tits[a],bg=color,font=("Verdana", 8)) 
+            cell.grid(row=a, column=0)
 
-    for b in range(len(tits)):
-        celld =Label(fr,width=25,height=3,text=fechayhorar[b],bg="white",anchor="w")
-        celld.grid(row=b, column=2)
-    
-    t=Label(ventanamr,text="Titulo",bg="white").place(x=40,y=5)
-    Label(ventanamr,text="Fecha Recordatorio",bg="white").place(x=140,y=5)
+        for b in range(len(tits)):
+            if b%2==0:
+                color="#CDCDB7"
+            else:
+                color="#FFFFD3"
+            celld =Label(fr,width=25,height=3,text=fechayhorar[b],bg=color,font=("Verdana",8))
+            celld.grid(row=b, column=2)
+        
+        t=Label(ventanamr,text="Titulo",bg="white",font=("Verdana", 10)).place(x=40,y=5)
+        Label(ventanamr,text="Fecha Recordatorio",bg="white",font=("Verdana", 10)).place(x=130,y=5)
 
       
 mostrar_calendario(CalendarioPrincipal.semana_actual)
-
-     
 
 from tkinter import ttk
 #boton siguiente semana
@@ -433,7 +566,7 @@ sigue.place(x=430,y=295)
 #boton anterior semana
 ante=ttk.Button(raiz,text="Semana Anterior",command=anterior_semana)
 ante.pack()
-ante.place(x=15,y=295)
+ante.place(x=15,y=295)     
 
 def abrir_ventana():
     
@@ -606,7 +739,7 @@ def abrir_ventana():
         
         #fecha y hora actuales
         fechayhora=(fechan+","+horaln)
-        print(fechayhora)
+
 
 
         #duracion
@@ -644,6 +777,7 @@ def abrir_ventana():
             Eventos.agregar_evento()
             Eventos.listadias.append(dia_actual)
             messagebox.showinfo(message="Evento Agregado", title="Calendario")
+            mostrar_calendario(CalendarioPrincipal.semana_actual)
             ventananueva.destroy()
         else:
             with open("eventos.json",'r') as archivo:
@@ -700,33 +834,8 @@ def abrir_ventana():
                 Eventos.agregar_evento()
                 Eventos.listadias.append(dia_actual)
                 messagebox.showinfo(message="Evento Agregado", title="Calendario")
+                mostrar_calendario(CalendarioPrincipal.semana_actual)
                 ventananueva.destroy()
-
-
-            #repite=False
-            #for p in range(len(listafechas)):
-            #    if listadiasfechas[p]==dia.get() and listamesfechas[p]==mes.get() and listahorasfechas[p]==dia.get():
-            #        repite=True
-            #        break
-            #    else:    
-            #        repite=False
-
-            #desfechayhora=datetime.datetime.strptime(fechayhora,'%d/%m/%Y,%H:%M:%S')
-            #dfh=desfechayhora.strftime("%d")
-            #dfhh=int(dfh)
-            #mfh=desfechayhora.strftime("%m")
-            #mfchh=int(mfh)
-            #hfh=desfechayhora.strftime("%H")
-            #hfhh=int(hfh)
-
-
-            #for q in range(len(listafechas)):
-            #    if listadiasfechas[q]==dfhh and listamesfechas[q]==mfchh and listahorasfechas[q]==hfhh:
-
-            #        messagebox.showerror("Error", "ya existe un evento con el mismo dia y hora")
-            #        ventananueva.focus_set()
-
-            #        break
 
 
     #BOTON AGREGAR LISTO
@@ -801,6 +910,7 @@ def eliminar_evento():
             Eventos.listaeventos.pop(numero)
             with open("eventos.json",'w') as archivo:
                 json.dump(datas,archivo)
+            mostrar_calendario(CalendarioPrincipal.semana_actual)
 
         #funcion del boton salir
         def salir_vm():
@@ -871,10 +981,10 @@ def modificar_evento():
                 fe = Toplevel(raiz)
                 fe.focus_set()
                 fe.title("Modificar evento")
-                fe.geometry("250x300")
-                centrar(fe,250,300)
+                fe.geometry("250x250")
+                centrar(fe,250,250)
                 
-                Label(fe,text="Ingrese el nuevo valor de \n"+comboitem.get()).place(x=20,y=20)
+                Label(fe,text="Ingrese el nuevo valor de \n"+comboitem.get()).place(x=50,y=20)
                 horas=list()
                 minutos=list()
 
@@ -891,7 +1001,7 @@ def modificar_evento():
                         minutos.append(r)   
                      
 
-                if comboitem.get()=="Fecha y hora":
+                if comboitem.get()=="Fecha y hora" or comboitem.get()=="Fecha Recordatorio":
                     #combo fecha
                     #label dias
                     Label(fe,text="Mes:").place(x=40,y=80)
@@ -926,14 +1036,14 @@ def modificar_evento():
                    
      
                 elif comboitem.get()=="Importancia":
-                    nuevo=Entry(fe,width="25")
+                    nuevo=Entry(fe,width="35")
                     nuevo.pack()
                     nuevo.place(x=22,y=100)
                     nuevo.focus_set()
                     nuevo.insert(END,"Normal/Importante")
 
                 else:
-                    nuevo=Entry(fe,width="25")
+                    nuevo=Entry(fe,width="35")
                     nuevo.pack()
                     nuevo.place(x=22,y=100)
                     nuevo.focus_set()
@@ -960,7 +1070,7 @@ def modificar_evento():
                                 c=aa[b]
                                 if b =="Fecha y hora":
                                     listafechas.append(c)
-                        print("lista fechas",listafechas)
+
 
                         for f in listafechas:
                             n=datetime.datetime.strptime(f, '%d/%m/%Y,%H:%M:%S')
@@ -974,29 +1084,20 @@ def modificar_evento():
                             mnn=int(mn)
                             listamesfechas.append(mnn)
 
-                        print("lista dias",listadiasfechas)
-                        print("lista horas",listahorasfechas)
-                        print("lista meses", listamesfechas)
                         mesget=combobox.get()
                         mesgett=mesget.lower()
                         mesnumero=CalendarioPrincipal.mesesnombre.index(mesgett) + 1
-                        print("dia",combobox1.get())
-                        print(mesnumero)
-                        print(combohorafyh.get())
+      
                         
                         for p in range(len(listafechas)):
                             if int(listadiasfechas[p])==int(combobox1.get()) and int(listamesfechas[p])==int(mesnumero) and int(listahorasfechas[p])==int(combohorafyh.get()):
-                                print("repite ")
                                 messagebox.showerror("Modificar Calendario", "Error - Ya existe un evento con el mismo dia y hora")
                                 fe.destroy()
                                 break
-                        
-                        dia=str(combobox1.get())
-                        mesn=str(mesnumero)
-                        hor=str(combohorafyh.get())
-                        min=str(combominutofyh)
-                        fechayhora=dia+"/"+mesn+"/"+"2023"+","+hor+":"+min+":00"
-                        print(fechayhora)
+                            
+                        fechayhora=str(combobox1.get())+"/"+str(mesnumero)+"/"+"2023"+","+str(combohorafyh.get())+":"+combominutofyh.get()+":"+"00"
+            
+
                         for i in range(len(listatitulos)):
                             if listatitulos[i] == combotitulo.get():
                                 tituloelegido=i
@@ -1012,16 +1113,39 @@ def modificar_evento():
                             Eventos.listaeventos=[]
                             Eventos.listaeventos=[datas]
                         messagebox.showinfo(message="Cambios Guardados", title="Modificar Calendario")
-
+                        mostrar_calendario(CalendarioPrincipal.semana_actual)
 
 
 
                     elif comboitem.get()=="Fecha Recordatorio":
-                        print("fr")
+               
+                        mesget=combobox.get()
+                        mesgett=mesget.lower()
+                        mesnumero=CalendarioPrincipal.mesesnombre.index(mesgett) + 1
+                            
+                        fechayhorar=str(combobox1.get())+"/"+str(mesnumero)+"/"+"2023"+","+str(combohorafyh.get())+":"+combominutofyh.get()+":"+"00"
+            
 
+                        for i in range(len(listatitulos)):
+                            if listatitulos[i] == combotitulo.get():
+                                tituloelegido=i
+                        
+                        aa=(datas[tituloelegido])
+
+                        for b in aa:
+                            if b=="Fecha Recordatorio":
+                                aa[b]=fechayhorar
+                        with open("eventos.json",'w') as archivo:
+                            #guardar la modificacion
+                            json.dump(datas,archivo, indent=4)
+                            Eventos.listaeventos=[]
+                            Eventos.listaeventos=[datas]
+                        messagebox.showinfo(message="Cambios Guardados", title="Modificar Calendario")
+                        mostrar_calendario(CalendarioPrincipal.semana_actual)
                     else:    
                         from tkinter import messagebox
                         messagebox.showinfo(message="Cambios Guardados", title="Modificar Calendario")
+                        
                         import json
                         #elegir titulo a modificar y modificarlo
                         for i in range(len(listatitulos)):
@@ -1041,12 +1165,15 @@ def modificar_evento():
                         with open("eventos.json",'w') as archivo:
                             #guardar la modificacion
                             json.dump(datas,archivo, indent=4)
-                            Eventos.listaeventos=[]
-                            Eventos.listaeventos=[datas]
+                        Eventos.listaeventos=[]
+                        Eventos.listaeventos=[datas]
+                        mostrar_calendario(CalendarioPrincipal.semana_actual)
 
-
+                def salirfe():
+                    fe.destroy()
+                    ventanamod.destroy()
                 #boton salir
-                bs=ttk.Button(fe,text="Atras")
+                bs=ttk.Button(fe,text="Salir",command=salirfe)
                 bs.pack()
                 bs.place(x=40,y=220)
 
