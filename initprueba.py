@@ -211,14 +211,71 @@ def mostrar_calendario_mensual():
         nome.place(x=220,y=5)
         calendario=calendar.monthcalendar(2023,mes)
         Mes.numero=mes
+
+        importselect=[]
+        dataseleccionada=[]
+        diasconseguidos=[]
+        mesconseguidos=[]
+        nsconseguido=[]
+        import json
+        f = open("eventos.json")
+        f.close()
+        ar=open("eventos.json",'r')
+        l=ar.readline()
+        ar.close
+        if l=="{}" or l=="" or l=="[]" or l==" ":
+            pass
+        else:
+            with open("eventos.json",'r') as archivo:
+                datos=json.load(archivo)
+            datajs = json.dumps(datos, indent=4, sort_keys=True)#list json
+            datas = json.loads(datajs)#objeto python
+
+            for a in range(len(datas)):
+                aa=datas[a]
+                for b in aa:
+                    c=aa[b]
+                    if b =="Fecha y hora":
+                        import datetime
+                        datetime_object = datetime.datetime.strptime(c,'%d/%m/%Y,%H:%M:%S')
+                        di=datetime_object.strftime("%d")#conseguir dia
+                        d=int(di)
+                        diasconseguidos.append(d)
+                        dss=datetime_object.strftime("%w")#conseguir dia de la semana,0-6, 0 es domingo
+                        ds=int(dss) - 1
+                        nsconseguido.append(ds)
+                        me=datetime_object.strftime("%m")#conseguir mes 1-12
+                        m=int(me)
+                        mesconseguidos.append(m)
+                        dataseleccionada.append(aa)
+
+            for af in range(len(dataseleccionada)):
+                aaf=dataseleccionada[af]
+                for bf in aaf:
+                    c=aaf[bf]
+                    if bf =="Importancia":
+                        importselect.append(c)
+
         for f in range(len(calendario)):
             for c in range(0, 7):
+                diac=calendario[f][c]
                 if calendario[f][c]==0:
                     celda = Label(mif,height=2,width=6,text=" ",bg="white")
                 else:
                     celda = Label(mif,height=2,width=6,text=calendario[f][c],bg="white")
-                celda.config(fg="black",bg="white",font=("Verdana",9))
-                celda.grid(padx=2, pady=2, row=f, column=c)
+                    celda.config(fg="black",font=("Verdana",9))
+                    celda.grid(padx=2, pady=2, row=f, column=c)
+                    for k in range(len(diasconseguidos)):
+                        if diac==diasconseguidos[k] and Mes.numero==mesconseguidos[k]:
+                            if importselect[k]=="Importante":
+                                celda.config(fg="black",bg="red")
+                            else:
+                                celda.config(fg="black",bg=Eventos.colores[k])                
+                    
+
+                    
+                
+
     
     
     mostrar(CalendarioPrincipal.mes_actual)
@@ -262,7 +319,7 @@ def mostrar_calendario(numero_semana):
 
     #crea los labels de los dias de    
     for c in range(len(semana)):
-            cell =Label(frame3, width=10,height=1,bg="white")
+            cell =Label(frame3, width=10,height=3,bg="white")
             cell.grid(row=0, column=c)
     #labels calendario    
     import json
