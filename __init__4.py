@@ -110,7 +110,7 @@ class Eventos():
 
     listadias=[]
     repeticiones=1
-    colores=["yellow","skyblue","springgreen","pink","green","blue","grey","white"]
+    colores=["yellow","skyblue","springgreen","pink","green","blue","grey","#5F5F9E","#7C7CFC"]
     def agregar_evento():
         import json
         Eventos.listaeventos
@@ -324,7 +324,7 @@ def mostrar_recordatorios():
     centrar(ventanamr,270,350)
     ventanamr.resizable(0,0)
     fr=Frame(ventanamr)
-    fr.config(bg="red")
+    fr.config(bg="white")
     fr.pack(ipadx=0,ipady=0, fill=X,pady=30,padx=2)
     import json
 
@@ -345,17 +345,41 @@ def mostrar_recordatorios():
                 tits.append(c)
 
     print("f",fechayhorar)
-
+    
     for a in range(len(tits)):
-        cell =Label(fr,width=15,height=3,text=tits[a],bg="white",padx=5)
+        if a%2==0:
+            color="#CDCDB7"
+        else:
+            color="#FFFFD3"
+        #funcion que muestra info del boton tocado
+        def mostrarinfo():
+            hola=Toplevel(fr)
+            hola.config(bg="white")
+            from centralizacion import centrar
+            centrar(hola,300,230)
+            hola.focus_set()
+            i=str(datas[a])
+            inf=i.replace(",","\n")
+            info=inf.replace("'"," ")
+            infos=info.replace("{"," ")
+            infor=infos.replace("}"," ")
+            information=Label(hola,text=infor,font=("Verdana", 12),bg="white")
+            information.place(x=5,y=10)
+
+
+        cell =Button(fr,width=15,height=3,text=tits[a],bg=color,font=("Verdana", 8),command=mostrarinfo) 
         cell.grid(row=a, column=0)
 
     for b in range(len(tits)):
-        celld =Label(fr,width=25,height=3,text=fechayhorar[b],bg="white",anchor="w")
+        if b%2==0:
+            color="#CDCDB7"
+        else:
+            color="#FFFFD3"
+        celld =Button(fr,width=25,height=3,text=fechayhorar[b],bg=color,font=("Verdana",8),command=mostrarinfo)
         celld.grid(row=b, column=2)
     
-    t=Label(ventanamr,text="Titulo",bg="white").place(x=40,y=5)
-    Label(ventanamr,text="Fecha Recordatorio",bg="white").place(x=140,y=5)
+    t=Label(ventanamr,text="Titulo",bg="white",font=("Verdana", 10)).place(x=40,y=5)
+    Label(ventanamr,text="Fecha Recordatorio",bg="white",font=("Verdana", 10)).place(x=130,y=5)
 
       
 mostrar_calendario(CalendarioPrincipal.semana_actual)

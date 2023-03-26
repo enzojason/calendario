@@ -185,6 +185,9 @@ class CalendarioPrincipal():
 
 #funcion que muestra el calendario SEMANAL
 def mostrar_calendario_mensual():
+    class Mes():
+        numero=int()
+
     from centralizacion import centrar
     import tkinter as tk
     from tkinter import messagebox,ttk
@@ -193,28 +196,44 @@ def mostrar_calendario_mensual():
     raizm.resizable(0,0)
     raizm.focus_set()
     raizm.title("Calendario Mensual")
-    raizm.geometry("500x400")
+    raizm.geometry("500x330")
     raizm.config(bg="white")
-    centrar(raizm,500,400)
+    centrar(raizm,500,330)
     mif=Frame(raizm)
-    mif.pack(padx=10,pady=100)
+    mif.pack(padx=5,pady=70)
     mif.config(width="550",height="720")
     mif.config(bg="white")
 
-    def mostrar(calendario):
+    def mostrar(mes):
+        Label(raizm,text="L          M         M         J          V         S          D",font=("verdana","11"),bg="white").place(x=70,y=50)
+        nm=str(CalendarioPrincipal.mesesnombre[mes-1])
+        nome=Label(raizm,text=nm.capitalize(),font=("verdana","14"),bg="white",width="7")
+        nome.place(x=220,y=5)
+        calendario=calendar.monthcalendar(2023,mes)
+        Mes.numero=mes
         for f in range(len(calendario)):
             for c in range(0, 7):
                 if calendario[f][c]==0:
-                    pass
+                    celda = Label(mif,height=2,width=6,text=" ",bg="white")
                 else:
-                    celda = Label(mif,height=2,width=8,text=calendario[f][c],bg="white")
-                    celda.grid(padx=2, pady=2, row=f, column=c)
+                    celda = Label(mif,height=2,width=6,text=calendario[f][c],bg="white")
+                celda.config(fg="black",bg="white",font=("Verdana",9))
+                celda.grid(padx=2, pady=2, row=f, column=c)
     
-    anio=CalendarioPrincipal.anio
-    mes=CalendarioPrincipal.mes_actual
-    calendario=calendar.monthcalendar(anio,mes)
-    mostrar(calendario)
+    
+    mostrar(CalendarioPrincipal.mes_actual)
+    def mes_siguiente():
+        n=Mes.numero + 1
+        mostrar(n)
 
+    def mes_anterior():
+        ne=Mes.numero - 1
+        mostrar(ne)
+
+    mes_s=ttk.Button(raizm,text="Mes Anterior",command=mes_anterior)
+    mes_s.place(x=15,y=285)
+    mes_a=ttk.Button(raizm,text="Mes Siguiente",command=mes_siguiente)
+    mes_a.place(x=405,y=285)
 
 from tkinter import ttk
 
@@ -242,9 +261,9 @@ def mostrar_calendario(numero_semana):
         celda.grid(padx=1,pady=1,row=0,column=y,ipadx=1)
 
     #crea los labels de los dias de    
-    for c in range(0, 7):
-            cell =Label(frame3, width=10,bg="white")
-            cell.grid(row=x, column=c)
+    for c in range(len(semana)):
+            cell =Label(frame3, width=10,height=1,bg="white")
+            cell.grid(row=0, column=c)
     #labels calendario    
     import json
     f = open("eventos.json")
@@ -261,8 +280,9 @@ def mostrar_calendario(numero_semana):
         datas = json.loads(datajs)#objeto python
 
         dataseleccionada=[]
-        diasse=[]
-        numsse=[]
+        diasconseguidos=[]
+        mesconseguidos=[]
+        nsconseguido=[]
         for a in range(len(datas)):
             aa=datas[a]
             for b in aa:
@@ -272,71 +292,29 @@ def mostrar_calendario(numero_semana):
                     datetime_object = datetime.datetime.strptime(c,'%d/%m/%Y,%H:%M:%S')
                     di=datetime_object.strftime("%d")#conseguir dia
                     d=int(di)
+                    diasconseguidos.append(d)
                     dss=datetime_object.strftime("%w")#conseguir dia de la semana,0-6, 0 es domingo
                     ds=int(dss) - 1
+                    nsconseguido.append(ds)
                     me=datetime_object.strftime("%m")#conseguir mes 1-12
                     m=int(me)
-                    print("numero de mes cp+1  ",CalendarioPrincipal.numero_de_mes)
-                    print("numero de semana cp ",CalendarioPrincipal.numero_de_semana)
-                    if m==CalendarioPrincipal.numero_de_mes+1:
-                        mes=CalendarioPrincipal.aniocompleto[m-1]
-                        for s in range(len(mes)):
-                            sem=mes[s]
-                            for i in range(len(sem)):
-                                if s==CalendarioPrincipal.numero_de_semana and m==CalendarioPrincipal.numero_de_mes+1 :
-                                    if sem[i]==d:
-                                        diasse.append(d)
-                                        numsse.append(ds)
-                                        dataseleccionada.append(aa)
-
-        tituloselect=[]
-        for a in range(len(dataseleccionada)):
-            aa=(dataseleccionada[a])
-            for b in aa:
-                c=aa[b]
-                if b =="Titulo":
-                    tituloselect.append(c)    
-
-        importselect=[]
-        for a in range(len(dataseleccionada)):
-            aa=(dataseleccionada[a])
-            for b in aa:
-                c=aa[b]
-                if b =="Importancia":
-                    importselect.append(c)              
-                                
-        r=0        
-        i=0              
-        for u in diasse:
-            import tkinter as tk
-            from tkinter import messagebox,ttk     
+                    mesconseguidos.append(m)
+                    print(datetime_object)
+        
+        print("dias con",diasconseguidos)
+        print("mes con",mesconseguidos)
+        print("numero de la semana conseguido ",nsconseguido)
+        print("numero del mes ",CalendarioPrincipal.numero_de_mes)
+        print("Numero de la semana:" ,CalendarioPrincipal.numero_de_semana)
+        mms=CalendarioPrincipal.numero_de_mes+1
+        for i in range(len(semana)):
+            for j in range(len(diasconseguidos)):
+                print("SEMANA ",semana[i])
+                if diasconseguidos[j]==semana[i] and mesconseguidos[j]==mms:
+                    print("YYYYYYYYYYYY")
+                    celld =Label(frame3, width=10,height=2,text="hola ",bg="red")
+                    celld.grid(row=0, column=nsconseguido[j])
             
-            c=diasse.count(u)
-
-            if c ==1 :
-                if importselect[i]=="Importante":
-                    cell =Label(frame3, width=10,height=2,text=tituloselect[i],bg="red")
-                    cell.grid(row=0, column=numsse[i])
-                    i+=1
-                else:
-                    cell =Label(frame3, width=10,height=2,text=tituloselect[i],bg=Eventos.colores[i])
-                    cell.grid(row=0, column=numsse[i])
-                    i+=1  
-
-            else:
-                if importselect[i]=="Importante":
-                    cell =Label(frame3, width=10,height=2,text=tituloselect[i],bg="red")
-                    cell.grid(row=r, column=numsse[i])
-                    i+=1
-                    r+=1
-                else:
-                    cell =Label(frame3, width=10,height=3,text=tituloselect[i],bg=Eventos.colores[i])
-                    cell.grid(row=r, column=numsse[i])  
-                    i+=1                             
-                    r+=1
-     
-
-
 def siguiente_semana():
     mm=len(CalendarioPrincipal.aniocompleto[CalendarioPrincipal.numero_de_mes])
 
